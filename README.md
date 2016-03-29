@@ -6,13 +6,14 @@
 
 ###Required Libraries
 
-sudo pip3 install gensim
-sudo pip3 install sklearn
-sudo pip3 install numpy
+	sudo pip3 install gensim
+	sudo pip3 install sklearn
+	sudo pip3 install numpy
 
 ###Run
-python3 run.py
-python3 classify.py
+	
+	python3 run.py
+	python3 classify.py
 
 ##Researh Paper
 Quoc V. Le, and Tomas Mikolov, ``Distributed Representations of Sentences and Documents ICML", 2014
