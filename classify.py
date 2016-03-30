@@ -1,15 +1,15 @@
-################ This code is written to analyse various classification algorithms #######################
+'''
+    Analyzing Various Classification Algorithms on the Created Model
+'''
 
 # loading gensim modules
-from gensim import utils
-from gensim.models.doc2vec import LabeledSentence
 from gensim.models import Doc2Vec
 
 # loading numpy
 import numpy
 
 # loading random
-from random import shuffle
+#from random import shuffle
 
 # loading classifier
 from sklearn.linear_model import LogisticRegression
@@ -17,135 +17,165 @@ from sklearn import svm
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
 
-# learning model Distributed memory model
-model_cow = Doc2Vec.load('./imdb_cow.d2v')
+# Evaluation Metrics
+from sklearn.metrics import f1_score
 
-# initialising training vectors
-train_arrays_cow = numpy.zeros((25000, 100))
-train_labels_cow = numpy.zeros(25000)
+def classification_report(classifier, feature_array, labels, test_arrays, \
+    test_labels, algorithm, model):
+    '''
+        Create Classification Report
+    '''
+    classifier.fit(feature_array, labels)
 
-# updating training arrays
-for i in range(12500):
-    prefix_train_pos = 'TRAIN_POS_' + str(i)
-    prefix_train_neg = 'TRAIN_NEG_' + str(i)
-    train_arrays_cow[i] = model_cow.docvecs[prefix_train_pos]
-    train_arrays_cow[12500 + i] = model_cow.docvecs[prefix_train_neg]
-    train_labels_cow[i] = 1
-    train_labels_cow[12500 + i] = 0
+    # Computing accuracy
+    accuracy_score = classifier.score(test_arrays, test_labels)
 
-# initialising testing vectors
-test_arrays_cow = numpy.zeros((25000, 100))
-test_labels_cow = numpy.zeros(25000)
+    # Computing F1-score
+    clf_f1_score = f1_score(test_labels, classifier.predict(test_arrays))
 
-# updating testing arrays
-for i in range(12500):
-    prefix_test_pos = 'TEST_POS_' + str(i)
-    prefix_test_neg = 'TEST_NEG_' + str(i)
-    test_arrays_cow[i] = model_cow.docvecs[prefix_test_pos]
-    test_arrays_cow[12500 + i] = model_cow.docvecs[prefix_test_neg]
-    test_labels_cow[i] = 1
-    test_labels_cow[12500 + i] = 0
+    print("--------------", algorithm, ": ", model, "--------------")
+    print("Accuracy Score: ", accuracy_score)
+    print("F1-score: ", clf_f1_score)
 
-# learning model Distributed Bag of words model
-model_skip = Doc2Vec.load('./imdb_skip.d2v')
 
-# initialising training vectors
-train_arrays_skip = numpy.zeros((25000, 100))
-train_labels_skip = numpy.zeros(25000)
+def classify(args):
 
-# updating training arrays
-for i in range(12500):
-    prefix_train_pos = 'TRAIN_POS_' + str(i)
-    prefix_train_neg = 'TRAIN_NEG_' + str(i)
-    train_arrays_skip[i] = model_skip.docvecs[prefix_train_pos]
-    train_arrays_skip[12500 + i] = model_skip.docvecs[prefix_train_neg]
-    train_labels_skip[i] = 1
-    train_labels_skip[12500 + i] = 0
+    '''
+        Apply Various Classification Algorithms
+    '''
 
-# initialising testing vectors
-test_arrays_skip = numpy.zeros((25000, 100))
-test_labels_skip = numpy.zeros(25000)
+    train_arrays_cow, train_labels_cow, \
+    test_arrays_cow, test_labels_cow, \
+    train_arrays_skip, train_labels_skip, \
+    test_arrays_skip, test_labels_skip = args
 
-# updating testing arrays
-for i in range(12500):
-    prefix_test_pos = 'TEST_POS_' + str(i)
-    prefix_test_neg = 'TEST_NEG_' + str(i)
-    test_arrays_skip[i] = model_skip.docvecs[prefix_test_pos]
-    test_arrays_skip[12500 + i] = model_skip.docvecs[prefix_test_neg]
-    test_labels_skip[i] = 1
-    test_labels_skip[12500 + i] = 0
+    classifier = LogisticRegression(C=1.0, class_weight=None, dual=False, \
+        fit_intercept=True, intercept_scaling=1, penalty='l2', \
+        random_state=None, tol=0.0001)
 
-# Training logistic regression classifier for DM model
-classifier = LogisticRegression(C=1.0, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, penalty='l2', random_state=None, tol=0.0001)
-classifier.fit(train_arrays_cow, train_labels_cow)
+    # Logistic Regression Classifier for DM model
+    classification_report(classifier, train_arrays_cow, train_labels_cow, \
+        test_arrays_cow, test_labels_cow, "Logistic Regression", "DM Model")
 
-# Computing accuracy
-model_cow_logistic = classifier.score(test_arrays_cow, test_labels_cow)
+    # Logistic Regression Classifier for DBOM model
+    classification_report(classifier, train_arrays_skip, train_labels_skip, \
+        test_arrays_skip, test_labels_skip, "Logistic Regression", "DBOM Model")
 
-# Training logistic regression classifier for DBOM
-classifier = LogisticRegression(C=1.0, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, penalty='l2', random_state=None, tol=0.0001)
-classifier.fit(train_arrays_skip, train_labels_skip)
 
-# Computing accuracy
-model_skip_logistic = classifier.score(test_arrays_skip, test_labels_skip)
+    classifier = svm.SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0,
+        decision_function_shape=None, degree=3, gamma='auto', kernel='rbf',
+        max_iter=-1, probability=False, random_state=None, shrinking=True,
+        tol=0.001, verbose=False)
 
-# Training svm classifier for DM model
-classifier = svm.SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0,
-    decision_function_shape=None, degree=3, gamma='auto', kernel='rbf',
-    max_iter=-1, probability=False, random_state=None, shrinking=True,
-    tol=0.001, verbose=False)
-classifier.fit(train_arrays_cow, train_labels_cow)
+    # SVM Classifier for DM model
+    classification_report(classifier, train_arrays_cow, train_labels_cow, \
+        test_arrays_cow, test_labels_cow, "SVM Classifier", "DM Model")
 
-# Computing accuracy
-model_cow_svm = classifier.score(test_arrays_cow, test_labels_cow)
+    # SVM Classifier for DBOM model
+    classification_report(classifier, train_arrays_skip, train_labels_skip, \
+        test_arrays_skip, test_labels_skip, "SVM Classifier", "DBOM Model")
 
-# Training svm classifier for DBOM
-classifier = svm.SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0,
-    decision_function_shape=None, degree=3, gamma='auto', kernel='rbf',
-    max_iter=-1, probability=False, random_state=None, shrinking=True,
-    tol=0.001, verbose=False)
-classifier.fit(train_arrays_skip, train_labels_skip)
 
-# Computing accuracy
-model_skip_svm = classifier.score(test_arrays_skip, test_labels_skip)
+    classifier = KNeighborsClassifier(n_neighbors=5)
 
-# Training knn classifier for DM model
-classifier = KNeighborsClassifier(n_neighbors=5)
-classifier.fit(train_arrays_cow, train_labels_cow)
+    # KNN Classifier for DM model
+    classification_report(classifier, train_arrays_cow, train_labels_cow, \
+        test_arrays_cow, test_labels_cow, "KNN Classifier", "DM Model")
 
-# Computing accuracy
-model_cow_knn = classifier.score(test_arrays_cow, test_labels_cow)
+    # KNN Classifier for DBOM model
+    classification_report(classifier, train_arrays_skip, train_labels_skip, \
+        test_arrays_skip, test_labels_skip, "KNN Classifier", "DBOM Model")
 
-# Training knn classifier for DBOM
-classifier = KNeighborsClassifier(n_neighbors=5)
-classifier.fit(train_arrays_skip, train_labels_skip)
+    classifier = RandomForestClassifier(n_estimators=10, criterion='gini', \
+        max_depth=None, min_samples_split=2, min_samples_leaf=1, \
+        min_weight_fraction_leaf=0.0, max_features='auto', \
+        max_leaf_nodes=None, bootstrap=True, oob_score=False, n_jobs=1, \
+        random_state=None, verbose=0, warm_start=False, class_weight=None)
 
-# Computing accuracy
-model_skip_knn = classifier.score(test_arrays_skip, test_labels_skip)
+    # Random Forest Classifier for DM model
+    classification_report(classifier, train_arrays_cow, train_labels_cow, \
+        test_arrays_cow, test_labels_cow, \
+        "Random Forest Classifier", "DM Model")
 
-# Training random forest classifier for DM model
-classifier = RandomForestClassifier(n_estimators=10, criterion='gini', max_depth=None, min_samples_split=2, min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_features='auto', max_leaf_nodes=None, bootstrap=True, oob_score=False, n_jobs=1, random_state=None, verbose=0, warm_start=False, class_weight=None)
-classifier.fit(train_arrays_cow, train_labels_cow)
+    # Random Forest Classifier Classifier for DBOM model
+    classification_report(classifier, train_arrays_skip, train_labels_skip, \
+        test_arrays_skip, test_labels_skip, \
+        "Random Forest Classifier", "DBOM Model")
 
-# Computing accuracy
-model_cow_rf = classifier.score(test_arrays_cow, test_labels_cow)
+def load_model():
+    '''
+        Loading and Building Train and Test Data
+    '''
+    # learning model Distributed memory model
+    model = Doc2Vec.load('./imdb_cow.d2v')
 
-# Training random forest classifier for DBOM
-classifier = RandomForestClassifier(n_estimators=10, criterion='gini', max_depth=None, min_samples_split=2, min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_features='auto', max_leaf_nodes=None, bootstrap=True, oob_score=False, n_jobs=1, random_state=None, verbose=0, warm_start=False, class_weight=None)
-classifier.fit(train_arrays_skip, train_labels_skip)
+    # initialising training vectors
+    train_arrays_cow = numpy.zeros((25000, 100))
+    train_labels_cow = numpy.zeros(25000)
 
-# Computing accuracy
-model_skip_rf = classifier.score(test_arrays_skip, test_labels_skip)
+    # updating training arrays
+    for i in range(12500):
+        prefix_train_pos = 'TRAIN_POS_' + str(i)
+        prefix_train_neg = 'TRAIN_NEG_' + str(i)
+        train_arrays_cow[i] = model.docvecs[prefix_train_pos]
+        train_arrays_cow[12500 + i] = model.docvecs[prefix_train_neg]
+        train_labels_cow[i] = 1
+        train_labels_cow[12500 + i] = 0
 
-# Print all accuracies
-print("Algorithm","Model","Accuracy")
-print("Logistic Regression","Skip",model_skip_logistic)
-print("Logistic Regression","Cow",model_cow_logistic)
-print("RBF Kernel Svm","Skip",model_skip_svm)
-print("RBF Kernel Svm","Cow",model_cow_svm)
-print("KNN","Skip",model_skip_knn)
-print("KNN","Cow",model_cow_knn)
-print("KNN","Skip",model_skip_rf)
-print("KNN","Cow",model_cow_rf)
+    # initialising testing vectors
+    test_arrays_cow = numpy.zeros((25000, 100))
+    test_labels_cow = numpy.zeros(25000)
+
+    # updating testing arrays
+    for i in range(12500):
+        prefix_test_pos = 'TEST_POS_' + str(i)
+        prefix_test_neg = 'TEST_NEG_' + str(i)
+        test_arrays_cow[i] = model.docvecs[prefix_test_pos]
+        test_arrays_cow[12500 + i] = model.docvecs[prefix_test_neg]
+        test_labels_cow[i] = 1
+        test_labels_cow[12500 + i] = 0
+
+    # learning model Distributed Bag of words model
+    model = Doc2Vec.load('./imdb_skip.d2v')
+
+    # initialising training vectors
+    train_arrays_skip = numpy.zeros((25000, 100))
+    train_labels_skip = numpy.zeros(25000)
+
+    # updating training arrays
+    for i in range(12500):
+        prefix_train_pos = 'TRAIN_POS_' + str(i)
+        prefix_train_neg = 'TRAIN_NEG_' + str(i)
+        train_arrays_skip[i] = model.docvecs[prefix_train_pos]
+        train_arrays_skip[12500 + i] = model.docvecs[prefix_train_neg]
+        train_labels_skip[i] = 1
+        train_labels_skip[12500 + i] = 0
+
+    # initialising testing vectors
+    test_arrays_skip = numpy.zeros((25000, 100))
+    test_labels_skip = numpy.zeros(25000)
+
+    # updating testing arrays
+    for i in range(12500):
+        prefix_test_pos = 'TEST_POS_' + str(i)
+        prefix_test_neg = 'TEST_NEG_' + str(i)
+        test_arrays_skip[i] = model.docvecs[prefix_test_pos]
+        test_arrays_skip[12500 + i] = model.docvecs[prefix_test_neg]
+        test_labels_skip[i] = 1
+        test_labels_skip[12500 + i] = 0
+
+    to_return = (train_arrays_cow, train_labels_cow, \
+        test_arrays_cow, test_labels_cow, \
+        train_arrays_skip, train_labels_skip, \
+        test_arrays_skip, test_labels_skip)
+
+    return to_return
+
+def main():
+    '''
+        Load and Classify Model.
+    '''
+    classify(load_model())
+
+if __name__ == '__main__':
+    main()

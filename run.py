@@ -14,6 +14,12 @@ import logging
 import os.path
 import sys
 
+program = os.path.basename(sys.argv[0])
+logger = logging.getLogger(program)
+logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s')
+logging.root.setLevel(level=logging.INFO)
+logger.info("running %s" % ' '.join(sys.argv))
+
 # Class to modify the corpus to give it as an input to doc2vec
 class LabeledLineSentence(object):
 
