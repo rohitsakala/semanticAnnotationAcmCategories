@@ -1,4 +1,8 @@
-################ This code is written to model the two architectures mentioned in the research paper(Refer Readme) on the corpus #######################
+'''
+    This code is written to model the two architectures
+    mentioned in the research paper (Refer Readme)
+    on the corpus.
+'''
 
 # loading gensim modules
 from gensim import utils
@@ -6,7 +10,7 @@ from gensim.models.doc2vec import LabeledSentence
 from gensim.models import Doc2Vec
 
 # loading numpy
-import numpy
+#import numpy
 
 # loading other modules
 from random import shuffle
@@ -16,7 +20,8 @@ import sys
 
 program = os.path.basename(sys.argv[0])
 logger = logging.getLogger(program)
-logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s')
+logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', \
+    filename="log_out.txt", filemode="a+")
 logging.root.setLevel(level=logging.INFO)
 logger.info("running %s" % ' '.join(sys.argv))
 
@@ -25,26 +30,58 @@ class LabeledLineSentence(object):
 
     def __init__(self, sources):
         self.sources = sources
-        flipped = {}
-        for key, value in sources.items():
-            if value not in flipped:
-                flipped[value] = [key]
-            else:
-                raise Exception('Non-unique prefix encountered')
 
     def __iter__(self):
-        for source, prefix in self.sources.items():
+        for source in sources:
             with utils.smart_open(source) as fin:
-                for item_no, line in enumerate(fin):
-                    yield LabeledSentence(utils.to_unicode(line).split(), [prefix + '_%s' % item_no])
+                title = ''
+                category = ''
+                field = ''
+                for line in fin.readlines():
+                    line = line.decode("utf-8")
+                    if line == '\r\n':
+                        yield LabeledSentence(\
+                            utils.to_unicode(title).split(),
+                            [category, field])
+                        title = ''
+                        category = ''
+                        field = ''
+
+                    if line.startswith('#*'):
+                        title = str(line).strip()[2:]
+
+                    if line.startswith('#c'):
+                        category = str(line).strip()[2:]
+
+                    if line.startswith('#f'):
+                        field = str(line).strip()[2:]
 
     def to_array(self):
         self.sentences = []
-        for source, prefix in self.sources.items():
+
+        for source in sources:
             with utils.smart_open(source) as fin:
-                for item_no, line in enumerate(fin):
-                    self.sentences.append(LabeledSentence(
-                        utils.to_unicode(line).split(), [prefix + '_%s' % item_no]))
+                title = ''
+                category = ''
+                field = ''
+                for line in fin.readlines():
+                    line = line.decode("utf-8")
+                    if line == '\r\n':
+                        self.sentences.append(LabeledSentence(
+                            utils.to_unicode(title).split(), [category, field]))
+                        title = ''
+                        category = ''
+                        field = ''
+
+                    if line.startswith('#*'):
+                        title = str(line).strip()[2:]
+
+                    if line.startswith('#c'):
+                        category = str(line).strip()[2:]
+
+                    if line.startswith('#f'):
+                        field = str(line).strip()[2:]
+
         return self.sentences
 
     def sentences_perm(self):
@@ -52,14 +89,16 @@ class LabeledLineSentence(object):
         return self.sentences
 
 # List of divided corpus
-sources = {'testNegative.txt':'TEST_NEG', 'testPositive.txt':'TEST_POS', 'trainNegative.txt':'TRAIN_NEG', 'trainPositive.txt':'TRAIN_POS', 'trainUnsup.txt':'TRAIN_UNS'}
+sources = ['dataset.txt']
 
 # Converting paragraphs into required format
 sentences = LabeledLineSentence(sources)
 
 # creating model objects
-model_skip = Doc2Vec(dm=0,min_count=1, window=10, size=100, sample=1e-4, negative=5, workers=7)
-model_cow = Doc2Vec(dm=1,min_count=1, window=10, size=100, sample=1e-4, negative=5, workers=7)
+model_skip = Doc2Vec(dm=0, min_count=1, \
+    window=10, size=100, sample=1e-4, negative=5, workers=7)
+model_cow = Doc2Vec(dm=1, min_count=1, window=10,
+    size=100, sample=1e-4, negative=5, workers=7)
 
 # Building word vectors with initial random weights
 model_cow.build_vocab(sentences.to_array())
