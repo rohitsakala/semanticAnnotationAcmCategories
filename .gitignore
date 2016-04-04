@@ -85,6 +85,9 @@ ENV/
 .spyderproject
 
 # Project Specific Files
+acm_skip.d2v
+acm_cow.d2v
+
 imdb_skip.d2v
 imdb_cow.d2v
 imdb_cow.d2v.syn0.npy
