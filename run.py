@@ -20,7 +20,7 @@ from acm_preprocess import preprocess_string
 program = os.path.basename(sys.argv[0])
 logger = logging.getLogger(program)
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', \
-    filename="log_output.txt", filemode="a+")
+    filename="log_output.txt", filemode="w+")
 logging.root.setLevel(level=logging.INFO)
 logger.info("running %s" % ' '.join(sys.argv))
 
@@ -29,6 +29,7 @@ class LabeledLineSentence(object):
 
     def __init__(self, sources):
         self.sources = sources
+        self.labels = []
 
     def __iter__(self):
         for source in sources:
@@ -58,6 +59,7 @@ class LabeledLineSentence(object):
 
     def to_array(self):
         self.sentences = []
+        self.labels = []
         
         for source in sources:
             with utils.smart_open(source) as fin:
@@ -66,17 +68,22 @@ class LabeledLineSentence(object):
                 conference = ''
                 field = ''
                 abstract = ''
+
                 for line in fin.readlines():
                     line = line.decode("utf-8")
                     if line == '\r\n':
+                        if abstract:
+                            self.labels.append(preprocess_string(field))
 
-                        self.sentences.append(LabeledSentence(
-                            preprocess_string(title), ['SET_%d' % (count)]))
+                            self.sentences.append(LabeledSentence(
+                                preprocess_string(title), ['SET_%d' % (count)]))
 
-                        count = count + 1
+                            count = count + 1
+                            abstract=''
                         title = ''
                         conference = ''
                         field = ''
+                        continue
 
                     if line.startswith('#*'):
                         title = str(line).strip()[2:]
@@ -116,7 +123,7 @@ print(len(sentences.sentences))
 
 # Training the models
 for epoch in range(50):
-    logger.info('Epoch %d' % epoch)
+    logger.info('Epoch %d' % (epoch + 1))
     model_cow.train(sentences.sentences_perm())
     model_skip.train(sentences.sentences_perm())
 
