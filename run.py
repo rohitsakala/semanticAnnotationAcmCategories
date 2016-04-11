@@ -61,9 +61,9 @@ class LabeledLineSentence(object):
         self.sentences = []
         self.labels = []
         
-        for source in sources:
+        for source, prefix in sources.items():
+            count = 0
             with utils.smart_open(source) as fin:
-                count = 1
                 title = ''
                 conference = ''
                 field = ''
@@ -73,13 +73,17 @@ class LabeledLineSentence(object):
                     line = line.decode("utf-8")
                     if line == '\r\n':
                         if abstract:
-                            self.labels.append(preprocess_string(field))
+                            #field_preprocessed = preprocess_string(field)
+
+                            self.labels.append(field)
 
                             self.sentences.append(LabeledSentence(
-                                preprocess_string(title), ['SET_%d' % (count)]))
+                                preprocess_string(abstract), 
+                                [field, "{0}_{1}".format(prefix, str(count)) ]))
 
                             count = count + 1
                             abstract=''
+
                         title = ''
                         conference = ''
                         field = ''
@@ -96,6 +100,7 @@ class LabeledLineSentence(object):
 
                     if line.startswith('#!'):
                         abstract = str(line).strip()[2:]
+            fin.close()
 
         return self.sentences
 
@@ -104,7 +109,8 @@ class LabeledLineSentence(object):
         return self.sentences
 
 # List of divided corpus
-sources = ['dataset.txt']
+sources = {'train_data.txt': 'TRAIN', \
+    'test_data.txt': 'TEST'}
 
 # Converting paragraphs into required format
 sentences = LabeledLineSentence(sources)

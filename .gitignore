@@ -96,3 +96,5 @@ imdb_cow.d2v.syn1neg.npy
 imdb_skip.d2v.syn0.npy
 imdb_skip.d2v.syn1.npy
 imdb_skip.d2v.syn1neg.npy
+
+log_output.txt
