@@ -21,7 +21,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn import preprocessing
 
 # Evaluation Metrics
-from sklearn.metrics import f1_score
+from sklearn.metrics import f1_score, recall_score
 
 # Random package for testing
 from random import randint
@@ -35,15 +35,19 @@ def classification_report(classifier, feature_array, labels, test_arrays, \
     '''
     classifier.fit(feature_array, labels)
 
-    # Computing accuracy
+    # Computing Accuracy
     accuracy_score = classifier.score(test_arrays, test_labels)
 
     # Computing F1-score
     clf_f1_score = f1_score(test_labels, classifier.predict(test_arrays), average="micro")
 
+    # Computing Recall 
+    clf_recall_score = recall_score(test_labels, classifier.predict(test_arrays), average="micro")
+
     print("--------------", algorithm, ": ", model, "--------------")
     print("Accuracy Score: ".ljust(18), accuracy_score)
     print("F1-score: ".ljust(18), clf_f1_score)
+    print("Recall-score: ".ljust(18), clf_recall_score)
 
 
 def classify(args):
