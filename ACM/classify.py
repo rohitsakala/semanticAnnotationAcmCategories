@@ -11,17 +11,22 @@ import numpy
 # loading random
 #from random import shuffle
 
-# loading classifier
+# loading classifiers
 from sklearn.linear_model import LogisticRegression
 from sklearn import svm
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
+
+#For String Conversion of Labels
+from sklearn import preprocessing
 
 # Evaluation Metrics
 from sklearn.metrics import f1_score
 
 # Random package for testing
 from random import randint
+
+import pickle
 
 def classification_report(classifier, feature_array, labels, test_arrays, \
     test_labels, algorithm, model):
@@ -34,11 +39,11 @@ def classification_report(classifier, feature_array, labels, test_arrays, \
     accuracy_score = classifier.score(test_arrays, test_labels)
 
     # Computing F1-score
-    clf_f1_score = f1_score(test_labels, classifier.predict(test_arrays))
+    clf_f1_score = f1_score(test_labels, classifier.predict(test_arrays), average="micro")
 
     print("--------------", algorithm, ": ", model, "--------------")
-    print("Accuracy Score: ", accuracy_score)
-    print("F1-score: ", clf_f1_score)
+    print("Accuracy Score: ".ljust(18), accuracy_score)
+    print("F1-score: ".ljust(18), clf_f1_score)
 
 
 def classify(args):
@@ -109,6 +114,15 @@ def load_model():
     '''
         Loading and Building Train and Test Data
     '''
+    #loading labels
+    labels = pickle.load(open('labels.p', 'rb'))
+
+
+    #Using LabelEncoder to convert string to numerical value.
+    label_encoder = preprocessing.LabelEncoder()
+    vec_label_train = label_encoder.fit_transform( labels[:549] )
+    vec_label_test = label_encoder.transform( labels[549:] ) 
+
     # learning model Distributed memory model
     model = Doc2Vec.load('./acm_cow.d2v')
 
@@ -122,7 +136,7 @@ def load_model():
     for i in range(549):
         prefix_train_pos = "TRAIN_" + str(i)
         train_arrays_cow[i] = model.docvecs[prefix_train_pos]
-        train_labels_cow[i] = randint(0, 1)
+        train_labels_cow[i] = vec_label_train[i]
         
     # initialising testing vectors
     test_arrays_cow = numpy.zeros((549, 100))
@@ -132,7 +146,7 @@ def load_model():
     for i in range(549):
         prefix_test_pos = 'TEST_' + str(i)
         test_arrays_cow[i] = model.docvecs[prefix_test_pos]
-        test_labels_cow[i] = randint(0, 1)
+        test_labels_cow[i] = vec_label_test[i]
 
     # learning model Distributed Bag of words model
     model = Doc2Vec.load('./acm_skip.d2v')
@@ -145,7 +159,7 @@ def load_model():
     for i in range(549):
         prefix_train_pos = 'TRAIN_' + str(i)
         train_arrays_skip[i] = model.docvecs[prefix_train_pos]
-        train_labels_skip[i] = randint(0, 1)
+        train_labels_skip[i] = vec_label_train[i]
         
     # initialising testing vectors
     test_arrays_skip = numpy.zeros((549, 100))
@@ -155,7 +169,7 @@ def load_model():
     for i in range(549):
         prefix_test_pos = 'TEST_' + str(i)
         test_arrays_skip[i] = model.docvecs[prefix_test_pos]
-        test_labels_skip[i] = randint(0, 1)
+        test_labels_skip[i] = vec_label_test[i]
         
     to_return = (train_arrays_cow, train_labels_cow, \
         test_arrays_cow, test_labels_cow, \

@@ -14,6 +14,7 @@ from random import shuffle
 import logging
 import os.path
 import sys
+import pickle
 
 from acm_preprocess import preprocess_string
 
@@ -79,7 +80,7 @@ class LabeledLineSentence(object):
 
                             self.sentences.append(LabeledSentence(
                                 preprocess_string(abstract), 
-                                [field, "{0}_{1}".format(prefix, str(count)) ]))
+                                ["{0}_{1}".format(prefix, str(count)) ]))
 
                             count = count + 1
                             abstract=''
@@ -108,6 +109,11 @@ class LabeledLineSentence(object):
         shuffle(self.sentences)
         return self.sentences
 
+def storeData(outfile_path, saved_data):
+    with open(outfile_path, 'wb') as outfile:
+        pickle.dump(saved_data, \
+            outfile, protocol=pickle.HIGHEST_PROTOCOL)
+
 # List of divided corpus
 sources = {'train_data.txt': 'TRAIN', \
     'test_data.txt': 'TEST'}
@@ -125,7 +131,9 @@ model_cow = Doc2Vec(dm=1, min_count=1, window=10,
 model_cow.build_vocab(sentences.to_array())
 model_skip.build_vocab(sentences.to_array())
 
-print(len(sentences.sentences))
+storeData('labels.p', sentences.labels)
+
+print(len(sentences.sentences), len(sentences.labels))
 
 # Training the models
 for epoch in range(50):
