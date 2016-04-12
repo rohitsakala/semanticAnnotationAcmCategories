@@ -20,6 +20,9 @@ from sklearn.ensemble import RandomForestClassifier
 # Evaluation Metrics
 from sklearn.metrics import f1_score
 
+# Random package for testing
+from random import randint
+
 def classification_report(classifier, feature_array, labels, test_arrays, \
     test_labels, algorithm, model):
     '''
@@ -107,63 +110,53 @@ def load_model():
         Loading and Building Train and Test Data
     '''
     # learning model Distributed memory model
-    model = Doc2Vec.load('./imdb_cow.d2v')
+    model = Doc2Vec.load('./acm_cow.d2v')
 
     # initialising training vectors
-    train_arrays_cow = numpy.zeros((25000, 100))
-    train_labels_cow = numpy.zeros(25000)
+    train_arrays_cow = numpy.zeros((549, 100))
+    train_labels_cow = numpy.zeros(549)
+
+    #print(len(model.docvecs))
 
     # updating training arrays
-    for i in range(12500):
-        prefix_train_pos = 'TRAIN_POS_' + str(i)
-        prefix_train_neg = 'TRAIN_NEG_' + str(i)
+    for i in range(549):
+        prefix_train_pos = "TRAIN_" + str(i)
         train_arrays_cow[i] = model.docvecs[prefix_train_pos]
-        train_arrays_cow[12500 + i] = model.docvecs[prefix_train_neg]
-        train_labels_cow[i] = 1
-        train_labels_cow[12500 + i] = 0
-
+        train_labels_cow[i] = randint(0, 1)
+        
     # initialising testing vectors
-    test_arrays_cow = numpy.zeros((25000, 100))
-    test_labels_cow = numpy.zeros(25000)
+    test_arrays_cow = numpy.zeros((549, 100))
+    test_labels_cow = numpy.zeros(549)
 
     # updating testing arrays
-    for i in range(12500):
-        prefix_test_pos = 'TEST_POS_' + str(i)
-        prefix_test_neg = 'TEST_NEG_' + str(i)
+    for i in range(549):
+        prefix_test_pos = 'TEST_' + str(i)
         test_arrays_cow[i] = model.docvecs[prefix_test_pos]
-        test_arrays_cow[12500 + i] = model.docvecs[prefix_test_neg]
-        test_labels_cow[i] = 1
-        test_labels_cow[12500 + i] = 0
+        test_labels_cow[i] = randint(0, 1)
 
     # learning model Distributed Bag of words model
-    model = Doc2Vec.load('./imdb_skip.d2v')
+    model = Doc2Vec.load('./acm_skip.d2v')
 
     # initialising training vectors
-    train_arrays_skip = numpy.zeros((25000, 100))
-    train_labels_skip = numpy.zeros(25000)
+    train_arrays_skip = numpy.zeros((549, 100))
+    train_labels_skip = numpy.zeros(549)
 
     # updating training arrays
-    for i in range(12500):
-        prefix_train_pos = 'TRAIN_POS_' + str(i)
-        prefix_train_neg = 'TRAIN_NEG_' + str(i)
+    for i in range(549):
+        prefix_train_pos = 'TRAIN_' + str(i)
         train_arrays_skip[i] = model.docvecs[prefix_train_pos]
-        train_arrays_skip[12500 + i] = model.docvecs[prefix_train_neg]
-        train_labels_skip[i] = 1
-        train_labels_skip[12500 + i] = 0
-
+        train_labels_skip[i] = randint(0, 1)
+        
     # initialising testing vectors
-    test_arrays_skip = numpy.zeros((25000, 100))
-    test_labels_skip = numpy.zeros(25000)
+    test_arrays_skip = numpy.zeros((549, 100))
+    test_labels_skip = numpy.zeros(549)
 
     # updating testing arrays
-    for i in range(12500):
-        prefix_test_pos = 'TEST_POS_' + str(i)
-        prefix_test_neg = 'TEST_NEG_' + str(i)
+    for i in range(549):
+        prefix_test_pos = 'TEST_' + str(i)
         test_arrays_skip[i] = model.docvecs[prefix_test_pos]
-        test_arrays_skip[12500 + i] = model.docvecs[prefix_test_neg]
-        test_labels_skip[i] = 1
-        test_labels_skip[12500 + i] = 0
-
+        test_labels_skip[i] = randint(0, 1)
+        
     to_return = (train_arrays_cow, train_labels_cow, \
         test_arrays_cow, test_labels_cow, \
         train_arrays_skip, train_labels_skip, \
