@@ -8,9 +8,6 @@ from gensim.models import Doc2Vec
 # loading numpy
 import numpy
 
-# loading random
-#from random import shuffle
-
 from sklearn.cross_validation import train_test_split
 
 # loading classifiers
@@ -19,7 +16,7 @@ from sklearn import svm
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
 
-#For String Conversion of Labels
+# String Conversion of Labels to numerical values
 from sklearn import preprocessing
 
 # Evaluation Metrics
@@ -29,6 +26,9 @@ from sklearn.metrics import f1_score, recall_score
 from random import randint
 
 import pickle
+
+# Importing Neural Network Module
+from NNet import NeuralNet
 
 def classification_report(classifier, feature_array, labels, test_arrays, \
     test_labels, algorithm, model):
@@ -64,6 +64,8 @@ def classify(args):
     train_arrays_skip, train_labels_skip, \
     test_arrays_skip, test_labels_skip = args
 
+    print('Starting Classification')
+
     classifier = LogisticRegression(C=1.0, class_weight=None, dual=False, \
         fit_intercept=True, intercept_scaling=1, penalty='l2', \
         random_state=None, tol=0.0001)
@@ -89,7 +91,6 @@ def classify(args):
     # SVM Classifier for DBOM model
     classification_report(classifier, train_arrays_skip, train_labels_skip, \
         test_arrays_skip, test_labels_skip, "SVM Classifier", "DBOM Model")
-
 
     classifier = KNeighborsClassifier(n_neighbors=5)
 
@@ -117,6 +118,28 @@ def classify(args):
         test_arrays_skip, test_labels_skip, \
         "Random Forest Classifier", "DBOM Model")
 
+    #Neural Network
+    classifier = NeuralNet(50, learn_rate=1e-2)
+    maxiter = 5000
+    batch = 150
+
+    _ = classifier.fit(train_arrays_cow, train_labels_cow, fine_tune=False, \
+        maxiter=maxiter, SGD=True, batch=batch, rho=0.9)
+
+    accuracy_score = classifier.score(test_arrays_cow, test_labels_cow)
+
+    print("--------------", "Neural Networks", ": ", "DM Model", "--------------")
+    print("Accuracy Score: ".ljust(18), accuracy_score)
+
+    _ = classifier.fit(train_arrays_skip, train_labels_skip, fine_tune=False, \
+        maxiter=maxiter, SGD=True, batch=batch, rho=0.9)
+
+    accuracy_score = classifier.score(test_arrays_skip, test_labels_skip)
+
+    print("--------------", "Neural Networks", ": ", "DBOM Model", "--------------")
+    print("Accuracy Score: ".ljust(18), accuracy_score)
+    
+
 def load_model():
     '''
         Loading and Building Train and Test Data
@@ -141,7 +164,7 @@ def load_model():
 
 
     train_arrays_cow, test_arrays_cow, train_labels_cow, test_labels_cow = \
-        train_test_split(cow_arrays, transformed_labels, test_size=0.9, random_state=42)
+        train_test_split(cow_arrays, transformed_labels, test_size=0.8, random_state=42)
 
     # initialising feature array
     skip_arrays = numpy.zeros((247543, 100))
@@ -155,7 +178,7 @@ def load_model():
         skip_arrays[i] = model.docvecs[prefix_train_pos]
 
     train_arrays_skip, test_arrays_skip, train_labels_skip, test_labels_skip = \
-        train_test_split(skip_arrays, transformed_labels, test_size=0.9, random_state=42)
+        train_test_split(skip_arrays, transformed_labels, test_size=0.8, random_state=42)
 
     to_return = (train_arrays_cow, train_labels_cow, \
         test_arrays_cow, test_labels_cow, \
