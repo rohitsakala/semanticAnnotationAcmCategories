@@ -35,6 +35,7 @@ def classification_report(classifier, feature_array, labels, test_arrays, \
     '''
         Create Classification Report
     '''
+
     classifier.fit(feature_array, labels)
 
     # Computing Accuracy
@@ -123,6 +124,10 @@ def load_model():
     #loading labels
     labels = pickle.load(open('labels.p', 'rb'))
 
+    #Using LabelEncoder to convert string to numerical value.
+    label_encoder = preprocessing.LabelEncoder()
+    transformed_labels = label_encoder.fit_transform( labels )
+
     # initialising feature array
     cow_arrays = numpy.zeros((247543, 100))
 
@@ -134,13 +139,9 @@ def load_model():
         prefix_train_pos = "SET_" + str(i)
         cow_arrays[i] = model.docvecs[prefix_train_pos]
 
-    train_arrays_cow, train_labels_cow, test_arrays_cow, test_labels_cow = \
-        train_test_split(cow_arrays, labels, test_size=0.8, random_state=42)
 
-    #Using LabelEncoder to convert string to numerical value.
-    label_encoder = preprocessing.LabelEncoder()
-    vec_label_train = label_encoder.fit_transform( train_labels_cow )
-    vec_label_test = label_encoder.transform( test_labels_cow ) 
+    train_arrays_cow, test_arrays_cow, train_labels_cow, test_labels_cow = \
+        train_test_split(cow_arrays, transformed_labels, test_size=0.9, random_state=42)
 
     # initialising feature array
     skip_arrays = numpy.zeros((247543, 100))
@@ -153,13 +154,8 @@ def load_model():
         prefix_train_pos = "SET_" + str(i)
         skip_arrays[i] = model.docvecs[prefix_train_pos]
 
-    train_arrays_skip, train_labels_skip, test_arrays_skip, test_labels_skip = \
-        train_test_split(skip_arrays, labels, test_size=0.8, random_state=42)
-
-    #Using LabelEncoder to convert string to numerical value.
-    label_encoder = preprocessing.LabelEncoder()
-    vec_label_train = label_encoder.fit_transform( train_labels_skip )
-    vec_label_test = label_encoder.transform( test_labels_skip ) 
+    train_arrays_skip, test_arrays_skip, train_labels_skip, test_labels_skip = \
+        train_test_split(skip_arrays, transformed_labels, test_size=0.9, random_state=42)
 
     to_return = (train_arrays_cow, train_labels_cow, \
         test_arrays_cow, test_labels_cow, \
