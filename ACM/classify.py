@@ -11,6 +11,8 @@ import numpy
 # loading random
 #from random import shuffle
 
+from sklearn.cross_validation import train_test_split
+
 # loading classifiers
 from sklearn.linear_model import LogisticRegression
 from sklearn import svm
@@ -121,60 +123,44 @@ def load_model():
     #loading labels
     labels = pickle.load(open('labels.p', 'rb'))
 
-
-    #Using LabelEncoder to convert string to numerical value.
-    label_encoder = preprocessing.LabelEncoder()
-    vec_label_train = label_encoder.fit_transform( labels[:549] )
-    vec_label_test = label_encoder.transform( labels[549:] ) 
+    # initialising feature array
+    cow_arrays = numpy.zeros((247543, 100))
 
     # learning model Distributed memory model
     model = Doc2Vec.load('./acm_cow.d2v')
 
-    # initialising training vectors
-    train_arrays_cow = numpy.zeros((549, 100))
-    train_labels_cow = numpy.zeros(549)
-
-    #print(len(model.docvecs))
-
     # updating training arrays
-    for i in range(549):
-        prefix_train_pos = "TRAIN_" + str(i)
-        train_arrays_cow[i] = model.docvecs[prefix_train_pos]
-        train_labels_cow[i] = vec_label_train[i]
-        
-    # initialising testing vectors
-    test_arrays_cow = numpy.zeros((549, 100))
-    test_labels_cow = numpy.zeros(549)
+    for i in range(247543):
+        prefix_train_pos = "SET_" + str(i)
+        cow_arrays[i] = model.docvecs[prefix_train_pos]
 
-    # updating testing arrays
-    for i in range(549):
-        prefix_test_pos = 'TEST_' + str(i)
-        test_arrays_cow[i] = model.docvecs[prefix_test_pos]
-        test_labels_cow[i] = vec_label_test[i]
+    train_arrays_cow, train_labels_cow, test_arrays_cow, test_labels_cow = \
+        train_test_split(cow_arrays, labels, test_size=0.8, random_state=42)
+
+    #Using LabelEncoder to convert string to numerical value.
+    label_encoder = preprocessing.LabelEncoder()
+    vec_label_train = label_encoder.fit_transform( train_labels_cow )
+    vec_label_test = label_encoder.transform( test_labels_cow ) 
+
+    # initialising feature array
+    skip_arrays = numpy.zeros((247543, 100))
 
     # learning model Distributed Bag of words model
     model = Doc2Vec.load('./acm_skip.d2v')
 
-    # initialising training vectors
-    train_arrays_skip = numpy.zeros((549, 100))
-    train_labels_skip = numpy.zeros(549)
-
     # updating training arrays
-    for i in range(549):
-        prefix_train_pos = 'TRAIN_' + str(i)
-        train_arrays_skip[i] = model.docvecs[prefix_train_pos]
-        train_labels_skip[i] = vec_label_train[i]
-        
-    # initialising testing vectors
-    test_arrays_skip = numpy.zeros((549, 100))
-    test_labels_skip = numpy.zeros(549)
+    for i in range(247543):
+        prefix_train_pos = "SET_" + str(i)
+        skip_arrays[i] = model.docvecs[prefix_train_pos]
 
-    # updating testing arrays
-    for i in range(549):
-        prefix_test_pos = 'TEST_' + str(i)
-        test_arrays_skip[i] = model.docvecs[prefix_test_pos]
-        test_labels_skip[i] = vec_label_test[i]
-        
+    train_arrays_skip, train_labels_skip, test_arrays_skip, test_labels_skip = \
+        train_test_split(skip_arrays, labels, test_size=0.8, random_state=42)
+
+    #Using LabelEncoder to convert string to numerical value.
+    label_encoder = preprocessing.LabelEncoder()
+    vec_label_train = label_encoder.fit_transform( train_labels_skip )
+    vec_label_test = label_encoder.transform( test_labels_skip ) 
+
     to_return = (train_arrays_cow, train_labels_cow, \
         test_arrays_cow, test_labels_cow, \
         train_arrays_skip, train_labels_skip, \

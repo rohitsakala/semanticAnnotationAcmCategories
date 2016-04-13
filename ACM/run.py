@@ -114,9 +114,8 @@ def storeData(outfile_path, saved_data):
         pickle.dump(saved_data, \
             outfile, protocol=pickle.HIGHEST_PROTOCOL)
 
-# List of divided corpus
-sources = {'train_data.txt': 'TRAIN', \
-    'test_data.txt': 'TEST'}
+# Dictionary of divided corpus
+sources = {'CS_Citation_Network': 'SET'}
 
 # Converting paragraphs into required format
 sentences = LabeledLineSentence(sources)
@@ -136,7 +135,7 @@ storeData('labels.p', sentences.labels)
 print(len(sentences.sentences), len(sentences.labels))
 
 # Training the models
-for epoch in range(50):
+for epoch in range(2):
     logger.info('Epoch %d' % (epoch + 1))
     model_cow.train(sentences.sentences_perm())
     model_skip.train(sentences.sentences_perm())
