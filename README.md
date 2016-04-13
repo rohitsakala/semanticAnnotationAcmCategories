@@ -7,6 +7,7 @@
     $ workon myvirtualenv                                  [Optional]
 	$ pip3 install -r requirements.txt
 ```
+Download the Dataset needed for ACM in the ACM Directory from [here](https://www.dropbox.com/s/91uc71wlhd4sg70/CS_Citation_Network.zip?dl=0).
 
 ## Building the Model
 ```
