@@ -1,1 +1,116 @@
-My Page
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Semanticannotationacmcategories : Given a research paper, we need to label it with one of the acm classification tree 2012 categories">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Semanticannotationacmcategories</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/rohitsakala/semanticAnnotationAcmCategories">View on GitHub</a>
+
+          <h1 id="project_title">Semanticannotationacmcategories</h1>
+          <h2 id="project_tagline">Given a research paper, we need to label it with one of the acm classification tree 2012 categories</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/rohitsakala/semanticAnnotationAcmCategories/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/rohitsakala/semanticAnnotationAcmCategories/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h3>
+<a id="project-description" class="anchor" href="#project-description" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Project Description</h3>
+
+<p>The aim of this project is to annotate a document with a label with semantic analysis. We are testing our algorithm on ACM dataset with the help of wikipedia pages of the categories. </p>
+
+<h3>
+<a id="methodology" class="anchor" href="#methodology" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Methodology</h3>
+
+<p>The following is the process that we have followed. </p>
+
+<ul>
+<li>Pre-Process the data like removing alpha-numeric characters, punctuators etc.</li>
+<li>Divide the data into testing and training sets.</li>
+<li>Convert the data into vector space model using Word2Vec and Doc2Vec algorithms.</li>
+<li>Train a classifier with features the word vectors. </li>
+<li>Cross validate and report the results.</li>
+</ul>
+
+<h3>
+<a id="source-code" class="anchor" href="#source-code" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Source Code</h3>
+
+<h2>
+<a id="acm" class="anchor" href="#acm" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>ACM</h2>
+
+<h1>
+<a id="runpy" class="anchor" href="#runpy" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>run.py</h1>
+
+<p>This code is responsible for representing the dataset into vector space model and the models are saved.</p>
+
+<h1>
+<a id="pre_processpy" class="anchor" href="#pre_processpy" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>pre_process.py</h1>
+
+<p>This code is responsible to make the dataset clean. </p>
+
+<h1>
+<a id="classifypy" class="anchor" href="#classifypy" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>classify.py</h1>
+
+<p>This code is responsible for training the classifier and also reporting the results of cross-validation.</p>
+
+<h3>
+<a id="tags" class="anchor" href="#tags" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Tags</h3>
+
+<ul>
+<li>Information Retrieval and Extraction Course</li>
+<li>IIIT Hyderabad</li>
+<li>Semantic</li>
+<li>Annotation</li>
+<li>Documents</li>
+<li>Word2Vec</li>
+<li>Doc2Vec</li>
+<li>ACM</li>
+<li>Research Papers</li>
+<li>Neural Networks</li>
+<li>KNN</li>
+<li>NDCG</li>
+<li>MAP</li>
+<li>IIIT-H</li>
+<li>Major Project</li>
+</ul>
+
+<h3>
+<a id="contributors" class="anchor" href="#contributors" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Contributors</h3>
+
+<ul>
+<li>Sakala Venkata Krishna Rohit</li>
+<li>Sharvil Katariya</li>
+<li>Nikhil Chavanke</li>
+</ul>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Semanticannotationacmcategories maintained by <a href="https://github.com/rohitsakala">rohitsakala</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
