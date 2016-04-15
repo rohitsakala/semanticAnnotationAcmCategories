@@ -27,7 +27,9 @@ f.close()
 
 print class_dict.keys()
 
-list_ai = ['scientific_computing','human-computer_interaction','real_time_and_embedded_systems','algorithms_and_theory','networks_and_communications','simulation','computer_education','machine_learning_and_pattern_recognition','natural_language_and_speech','artificial_intelligence']
+list_computational_science = ['scientific_computing', ]
+
+list_ai = ['human-computer_interaction','real_time_and_embedded_systems','algorithms_and_theory','networks_and_communications','simulation','computer_education','machine_learning_and_pattern_recognition','natural_language_and_speech','artificial_intelligence']
 list_ir = ['information_retrieval','world_wide_web','multimedia','distributed_and_parallel_computing']
 list_db = ['security_and_privacy','data_mining','databases','programming_languages','hardware_and_architecture','software_engineering','operating_systems']
 list_cv = ['computer_vision', 'graphics','bioinformatics_and_computational_biology']

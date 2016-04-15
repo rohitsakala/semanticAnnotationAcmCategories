@@ -66,7 +66,7 @@ class LabeledLineSentence(object):
         self.labels = []
         
         global mapping_dict
-        
+
         for source, prefix in sources.items():
             count = 0
             with utils.smart_open(source) as fin:
@@ -85,7 +85,7 @@ class LabeledLineSentence(object):
 
                             self.sentences.append(LabeledSentence(
                                 preprocess_string(abstract), 
-                                ["{0}_{1}".format(prefix, str(count)) ]))
+                                ["{0}_{1}".format(prefix, str(count)), mapping_dict[field]]))
 
                             count = count + 1
                             abstract=''
@@ -140,7 +140,7 @@ storeData('labels.p', sentences.labels)
 print(len(sentences.sentences), len(sentences.labels))
 
 # Training the models
-for epoch in range(2):
+for epoch in range(10):
     logger.info('Epoch %d' % (epoch + 1))
     model_cow.train(sentences.sentences_perm())
     model_skip.train(sentences.sentences_perm())
