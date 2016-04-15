@@ -27,12 +27,12 @@ f.close()
 
 print class_dict.keys()
 
-list_computational_science = ['scientific_computing', ]
-
-list_ai = ['human-computer_interaction','real_time_and_embedded_systems','algorithms_and_theory','networks_and_communications','simulation','computer_education','machine_learning_and_pattern_recognition','natural_language_and_speech','artificial_intelligence']
-list_ir = ['information_retrieval','world_wide_web','multimedia','distributed_and_parallel_computing']
-list_db = ['security_and_privacy','data_mining','databases','programming_languages','hardware_and_architecture','software_engineering','operating_systems']
+list_ai = ['algorithms_and_theory','computer_education','machine_learning_and_pattern_recognition',\
+	'natural_language_and_speech','artificial_intelligence']
+list_ir = ['information_retrieval','world_wide_web','multimedia']
+list_db = ['data_mining','databases']
 list_cv = ['computer_vision', 'graphics','bioinformatics_and_computational_biology']
+list_other = ['programming_languages','hardware_and_architecture','operating_systems','distributed_and_parallel_computing', 'networks_and_communications','simulation','human-computer_interaction','scientific_computing', 'real_time_and_embedded_systems', 'security_and_privacy', 'software_engineering',]
 
 temp_list = [ list_ai, list_ir, list_db, list_cv]
 
@@ -49,6 +49,9 @@ for val in list_db:
 
 for val in list_cv:
 	manual_class_dict[val]='CV'
+
+for val in list_other:
+	manual_class_dict[val]='OT'
 
 print "\n\nmanual classification into 4 categories\n\n"
 print manual_class_dict

@@ -132,8 +132,11 @@ def classification_report(classifier, feature_array, labels, test_arrays, \
         Create Classification Report
     '''
 
-    classifier.fit(feature_array, labels, *args, **kwargs)
-
+    if classifier=="Logistic Regression" or classifier=="LinearSVC Classifier":
+        classifier.fit(feature_array, labels, *args, **kwargs).decision_function(test_arrays).decision_function(test_arrays)
+    else:
+        classifier.fit(feature_array, labels, *args, **kwargs)
+        
     predicted_values = classifier.predict(test_arrays)
 
     #Computing Mean Average Precision Score
@@ -146,20 +149,6 @@ def classification_report(classifier, feature_array, labels, test_arrays, \
     print("--------------", algorithm, ": ", model, "--------------")
     print("MAP value:", clf_mean_avg_precision)
     print("NDCG Value: ", clf_ndcg_score)
-
-    '''
-    X = np.concatenate((feature_array, test_arrays), axis=0)
-    Y = np.concatenate((labels, test_labels), axis=0)
-
-    cv = cross_validation.KFold(len(Y), 10, shuffle=True, random_state=1234)
-    losses = []
-    for train, test in cv:
-        truth = Y[test]
-        pred = classifier.fit(X[list(train)], Y[list(train)])
-        pred = pred.predict(X[test])
-        losses.append(precision_score(truth.reshape(-1), pred.reshape(-1)))
-    print('F1 score=%.3f stderr=%.3f' % (np.average(losses), np.std(losses)))
-    '''
 
 
 def classify(args):
@@ -277,27 +266,6 @@ def classify(args):
     classification_report(classifier, train_arrays_skip, train_labels_skip, \
         test_arrays_skip, test_labels_skip, \
         "Gradient Boosting Classifier", "DBOM Model")
-
-    classifier = OneVsRestClassifier(svm.SVC(C=1.0, cache_size=200, \
-        class_weight=None, coef0=0.0, decision_function_shape=None, \
-        degree=3, gamma='auto', kernel='linear', \
-        max_iter=-1, probability=False, random_state=None, shrinking=True, \
-        tol=0.001, verbose=False))
-
-    # SVM Classifier for DM model
-    classification_report(classifier, train_arrays_cow, train_labels_cow, \
-        test_arrays_cow, test_labels_cow, "SVM Classifier", "DM Model")
-
-    classifier = OneVsRestClassifier(svm.SVC(C=1.0, cache_size=200, \
-        class_weight=None, coef0=0.0, decision_function_shape=None, \
-        degree=3, gamma='auto', kernel='linear', \
-        max_iter=-1, probability=False, random_state=None, shrinking=True,
-        tol=0.001, verbose=False))
-
-    # SVM Classifier for DBOM model
-    classification_report(classifier, train_arrays_skip, train_labels_skip, \
-        test_arrays_skip, test_labels_skip, "SVM Classifier", "DBOM Model")
-
 
 def load_model():
     '''

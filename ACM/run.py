@@ -26,7 +26,7 @@ logging.root.setLevel(level=logging.INFO)
 logger.info("running %s" % ' '.join(sys.argv))
 
 
-mapping_dict = {'scientific_computing': 'AI', 'information_retrieval': 'IR', 'world_wide_web': 'IR', 'security_and_privacy': 'DB', 'computer_education': 'AI', 'distributed_and_parallel_computing': 'IR', 'programming_languages': 'DB', 'algorithms_and_theory': 'AI', 'networks_and_communications': 'AI', 'machine_learning_and_pattern_recognition': 'AI', 'multimedia': 'IR', 'natural_language_and_speech': 'AI', 'artificial_intelligence': 'AI', 'real_time_and_embedded_systems': 'AI', 'bioinformatics_and_computational_biology': 'CV', 'hardware_and_architecture': 'DB', 'data_mining': 'DB', 'graphics': 'CV', 'software_engineering': 'DB', 'computer_vision': 'CV', 'human-computer_interaction': 'AI', 'simulation': 'AI', 'databases': 'DB', 'operating_systems': 'DB'}
+mapping_dict = {'scientific_computing': 'OT', 'information_retrieval': 'IR', 'world_wide_web': 'IR', 'security_and_privacy': 'OT', 'computer_education': 'AI', 'distributed_and_parallel_computing': 'OT', 'programming_languages': 'OT', 'algorithms_and_theory': 'AI', 'networks_and_communications': 'OT', 'machine_learning_and_pattern_recognition': 'AI', 'multimedia': 'IR', 'natural_language_and_speech': 'AI', 'artificial_intelligence': 'AI', 'real_time_and_embedded_systems': 'OT', 'bioinformatics_and_computational_biology': 'CV', 'hardware_and_architecture': 'OT', 'data_mining': 'DB', 'graphics': 'CV', 'software_engineering': 'OT', 'computer_vision': 'CV', 'human-computer_interaction': 'OT', 'simulation': 'OT', 'databases': 'DB', 'operating_systems': 'OT'}
 
 # Class to modify the corpus to give it as an input to doc2vec
 class LabeledLineSentence(object):
