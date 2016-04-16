@@ -19,7 +19,31 @@ Download the Dataset needed for ACM in the ACM Directory from [here](https://www
     $ python3 classify.py
 ```
 
-## Researh Paper
+##Mentors:
+- **Course Instructor:**
+	- Vasudev Verma
+- **TA:**
+	- Priya Radhakrishnan
+
+##Major Packages Required
+- nltk
+- gensim
+- numpy
+- scikit-learn
+- pickle
+
+**Members:**
+- [Rohit SVK](https://github.com/rohitsakala)
+- [Sharvil Katariya](https://github.com/scorpionhiccup)
+- [Nikhil Chavanke](https://github.com/nikhilchavanke) 
+
+## Research Paper
 Quoc V. Le, and Tomas Mikolov, ''Distributed Representations of Sentences and Documents ICML", 2014
 
+Tomas Mikolov, Kai Chen, Greg Corrado, and Jeffrey Dean, “Efficient Estimation of Word Representations in Vector Space. In Proceedings of Workshop at ICLR”, 2013.
+
+Cao et al., 2015, ''A Novel Neural Topic Model and Its Supervised Extension''. AAAI 2015
+
 Link :- https://cs.stanford.edu/~quocle/paragraph_vector.pdf
+
+Resources are available [here](resources.md).
