@@ -8,6 +8,3 @@ acm_skip.d2v.syn1.npy
 acm_skip.d2v.syn1neg.npy
 acm_cow.d2v.docvecs.doctag_syn0.npy
 acm_skip.d2v.docvecs.doctag_syn0.npy
-
-labels.p
-log_output.txt

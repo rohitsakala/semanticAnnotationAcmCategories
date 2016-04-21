@@ -1,4 +1,4 @@
- #!/usr/bin/env python -W ignore::DeprecationWarning
+#!/usr/bin/env python -W ignore::DeprecationWarning
 
 '''
     Analyzing Various Classification Algorithms on the Created Model
@@ -8,7 +8,7 @@
 from gensim.models import Doc2Vec
 
 # loading np
-import numpy as  np
+import numpy as np
 
 from sklearn.cross_validation import train_test_split
 
@@ -50,6 +50,7 @@ def mean_average_precision(ave_prec_list):
     ave_prec_arr = np.array(ave_prec_list)
     return ave_prec_arr.mean()
 
+
 def calc_mean_average_precision(y_true_list, y_pred_list):
     '''
         Function to calculate Mean Average Precision value,
@@ -66,12 +67,14 @@ def calc_mean_average_precision(y_true_list, y_pred_list):
     '''
     ave_prec_list = []
     for y_true, y_pred in zip(y_true_list, y_pred_list):
-        ave_prec = average_precision_score(y_true, y_pred, \
-        average="micro", sample_weight=None)
+        ave_prec = average_precision_score(y_true, y_pred,
+                                           average="micro", sample_weight=None)
         ave_prec_list.append(ave_prec)
     mean_average_precision_val = mean_average_precision(ave_prec_list)
     return mean_average_precision_val
 
+
+'''
 def dcg_score(y_true, y_score, k=10, gains="exponential"):
     """Discounted cumulative gain (DCG) at rank k
     Parameters
@@ -91,21 +94,29 @@ def dcg_score(y_true, y_score, k=10, gains="exponential"):
     order = np.argsort(y_score)[::-1]
     y_true = np.take(y_true, order[:k])
 
-
-    if gains == "exponential":
+    if gains == "preprocessing":
         gains = 2 ** y_true - 1
     elif gains == "linear":
         gains = y_true
     else:
         raise ValueError("Invalid gains option.")
 
-    # highest rank is 1 so +2 instead of +1
     discounts = np.log2(np.arange(len(y_true)) + 2)
 
     return np.sum(gains / discounts)
+'''
 
+def dcg_score(y_true, y_score, k=5):
+    
+    order = np.argsort(y_score)[::-1]
+    y_true = np.take(y_true, order[:k])
 
-def ndcg_score(y_true, y_score, k=4, gains="exponential"):
+    gain = 2 ** y_true - 1
+
+    discounts = np.log2(np.arange(len(y_true)) + 2)
+    return np.sum(gain / discounts)
+
+def ndcg_score(y_true, y_score, k=5, gains="exponential"):
     """Normalized discounted cumulative gain (NDCG) at rank k
     Parameters
     ----------
@@ -121,29 +132,35 @@ def ndcg_score(y_true, y_score, k=4, gains="exponential"):
     -------
     NDCG @k : float
     """
-    best = dcg_score(y_true, y_true, k, gains)
-    actual = dcg_score(y_true, y_score, k, gains)
-    return actual / best
+    scores = []
+
+    for true_value, pred_value in zip(y_true, y_score):
+        best = dcg_score(true_value, pred_value, k)
+        actual = dcg_score(true_value, pred_value, k)
+        #if best == 0:
+        #    best = 0.000000000001
+        score = double(actual) / float(best)
+        scores.append(score)
+
+    scores = np.array(scores)
+    return np.mean(scores)
 
 
-def classification_report(classifier, feature_array, labels, test_arrays, \
-    test_labels, algorithm, model, *args, **kwargs):
+def classification_report(classifier, feature_array, labels, test_arrays,
+        test_labels, algorithm, model, *args, **kwargs):
     '''
         Create Classification Report
     '''
 
-    if classifier=="Logistic Regression" or classifier=="LinearSVC Classifier":
-        classifier.fit(feature_array, labels, *args, **kwargs).decision_function(test_arrays).decision_function(test_arrays)
-    else:
-        classifier.fit(feature_array, labels, *args, **kwargs)
-        
+    classifier.fit(feature_array, labels, *args, **kwargs)
+
     predicted_values = classifier.predict(test_arrays)
 
-    #Computing Mean Average Precision Score
-    clf_mean_avg_precision = calc_mean_average_precision(test_labels, \
-        predicted_values)
+    # Computing Mean Average Precision Score
+    clf_mean_avg_precision = calc_mean_average_precision(test_labels,
+                                                         predicted_values)
 
-    #Computing NDCG Score
+    # Computing NDCG Score
     clf_ndcg_score = ndcg_score(test_labels, predicted_values)
 
     print("--------------", algorithm, ": ", model, "--------------")
@@ -152,15 +169,14 @@ def classification_report(classifier, feature_array, labels, test_arrays, \
 
 
 def classify(args):
-
     '''
         Apply Various Classification Algorithms
     '''
 
     train_arrays_cow, train_labels_cow, \
-    test_arrays_cow, test_labels_cow, \
-    train_arrays_skip, train_labels_skip, \
-    test_arrays_skip, test_labels_skip = args
+        test_arrays_cow, test_labels_cow, \
+        train_arrays_skip, train_labels_skip, \
+        test_arrays_skip, test_labels_skip = args
 
     print('Starting Classification')
 
@@ -170,7 +186,7 @@ def classify(args):
         random_state=None, tol=0.0001))
 
     # Logistic Regression Classifier for DM model
-    classification_report(classifier, train_arrays_cow, train_labels_cow, \
+    classification_report(classifier, train_arrays_cow, train_labels_cow,
         test_arrays_cow, test_labels_cow, "Logistic Regression", "DM Model")
 
     classifier = OneVsRestClassifier(LogisticRegression(C=1.0, \
@@ -179,8 +195,9 @@ def classify(args):
         random_state=None, tol=0.0001))
 
     # Logistic Regression Classifier for DBOM model
-    classification_report(classifier, train_arrays_skip, train_labels_skip, \
-        test_arrays_skip, test_labels_skip, "Logistic Regression", "DBOM Model")
+    classification_report(classifier, train_arrays_skip, \
+        train_labels_skip, test_arrays_skip, test_labels_skip, \
+        "Logistic Regression", "DBOM Model")
 
     classifier = OneVsRestClassifier(LinearSVC(random_state=0))
 
@@ -195,7 +212,7 @@ def classify(args):
         test_arrays_skip, test_labels_skip, "LinearSVC Classifier", \
         "DBOM Model")
 
-    #Neural Network
+    # Neural Network
     classifier = NeuralNet(50, learn_rate=1e-2)
     maxiter = 10000
     batch = 1500
@@ -221,8 +238,7 @@ def classify(args):
         test_arrays_cow, test_labels_cow, \
         "Random Forest Classifier", "DM Model")
 
-
-    classifier = OneVsRestClassifier(RandomForestClassifier(n_estimators=1000,\
+    classifier = OneVsRestClassifier(RandomForestClassifier(n_estimators=1000, \
         criterion='gini', max_depth=None, min_samples_split=2, \
         min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_features='auto', \
         max_leaf_nodes=None, bootstrap=True, oob_score=False, n_jobs=1, \
@@ -242,13 +258,13 @@ def classify(args):
     classifier = OneVsRestClassifier(KNeighborsClassifier(n_neighbors=5))
 
     # KNN Classifier for DBOM model
-    classification_report(classifier, train_arrays_skip, train_labels_skip, \
+    classification_report(classifier, train_arrays_skip, train_labels_skip,
         test_arrays_skip, test_labels_skip, "KNN Classifier", "DBOM Model")
 
-    classifier = OneVsRestClassifier(GradientBoostingClassifier(\
-        n_estimators=15000, learning_rate=0.1, max_depth=100, \
-        random_state=0, loss='deviance', max_features=None, \
-        verbose=0, max_leaf_nodes=None, warm_start=False, \
+    classifier = OneVsRestClassifier(GradientBoostingClassifier(
+        n_estimators=15000, learning_rate=0.1, max_depth=100,
+        random_state=0, loss='deviance', max_features=None,
+        verbose=0, max_leaf_nodes=None, warm_start=False,
         presort='auto'))
 
     # Gradient Boosting Classifier for DM model
@@ -257,37 +273,38 @@ def classify(args):
         "Gradient Boosting Classifier", "DM Model")
 
     classifier = OneVsRestClassifier(GradientBoostingClassifier(
-        n_estimators=15000, learning_rate=0.1, max_depth=100, \
-        random_state=0, loss='deviance', max_features=None, \
-        verbose=0, max_leaf_nodes=None, warm_start=False, \
+        n_estimators=15000, learning_rate=0.1, max_depth=100,
+        random_state=0, loss='deviance', max_features=None,
+        verbose=0, max_leaf_nodes=None, warm_start=False,
         presort='auto'))
 
     # Gradient Boosting Classifier for DBOM model
-    classification_report(classifier, train_arrays_skip, train_labels_skip, \
+    classification_report(classifier, train_arrays_skip, train_labels_skip,
         test_arrays_skip, test_labels_skip, \
         "Gradient Boosting Classifier", "DBOM Model")
+
 
 def load_model():
     '''
         Loading and Building Train and Test Data
     '''
-    #loading labels
+    # loading labels
     labels = pickle.load(open('labels.p', 'rb'))
 
-    #Using LabelEncoder to convert string to numerical value.
+    # Using LabelEncoder to convert string to numerical value.
     label_encoder = preprocessing.LabelEncoder()
     transformed_labels = label_encoder.fit_transform(labels)
 
     transformed_labels = np.array(transformed_labels)
 
-    transformed_labels = label_binarize(transformed_labels, \
-        np.unique(transformed_labels))
+    transformed_labels = label_binarize(transformed_labels,
+                                        np.unique(transformed_labels))
 
     print('Found %d Labels' % len(label_encoder.classes_))
     print('Labels:', label_encoder.classes_)
 
     # initialising feature array
-    cow_arrays = np.zeros((247543, 100))
+    cow_arrays = np.zeros((247543, 300))
 
     # learning model Distributed memory model
     model = Doc2Vec.load('./acm_cow.d2v')
@@ -298,11 +315,11 @@ def load_model():
         cow_arrays[i] = model.docvecs[prefix_train_pos]
 
     train_arrays_cow, test_arrays_cow, train_labels_cow, test_labels_cow = \
-        train_test_split(cow_arrays, transformed_labels, \
-            test_size=0.1, random_state=42)
+        train_test_split(cow_arrays, transformed_labels,
+                         test_size=0.1, random_state=42)
 
     # initialising feature array
-    skip_arrays = np.zeros((247543, 100))
+    skip_arrays = np.zeros((247543, 300))
 
     # learning model Distributed Bag of words model
     model = Doc2Vec.load('./acm_skip.d2v')
@@ -313,15 +330,16 @@ def load_model():
         skip_arrays[i] = model.docvecs[prefix_train_pos]
 
     train_arrays_skip, test_arrays_skip, train_labels_skip, test_labels_skip = \
-        train_test_split(skip_arrays, transformed_labels, \
-            test_size=0.1, random_state=42)
+        train_test_split(skip_arrays, transformed_labels,
+                         test_size=0.1, random_state=42)
 
-    to_return = (train_arrays_cow, train_labels_cow, \
-        test_arrays_cow, test_labels_cow, \
-        train_arrays_skip, train_labels_skip, \
-        test_arrays_skip, test_labels_skip)
+    to_return = (train_arrays_cow, train_labels_cow,
+                 test_arrays_cow, test_labels_cow,
+                 train_arrays_skip, train_labels_skip,
+                 test_arrays_skip, test_labels_skip)
 
     return to_return
+
 
 def main():
     '''
